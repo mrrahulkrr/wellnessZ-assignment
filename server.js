@@ -13,24 +13,23 @@ const multerS3 = require('multer-s3');
 const dotenv = require('dotenv');
 const { Sequelize, DataTypes, Op } = require('sequelize');
 
-// Load environment variables from .env file
+// Loading environment variables from .env file
 dotenv.config();
 
-// Initialize Express app
+// Initializing Express app
 const app = express();
 app.use(bodyParser.json());
 
-// Configure AWS SDK
+// Configuring AWS SDK
 // JS SDK v3 does not support global configuration.
 // Codemod has attempted to pass values to each service client in this file.
-// You may need to update clients outside of this file, if they use global config.
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION
 });
 
-// Create S3 instance
+// Creating S3 instance
 const s3 = new S3({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -40,7 +39,7 @@ const s3 = new S3({
   region: process.env.AWS_REGION
 });
 
-// Configure Multer to use S3
+// Configuring Multer to use S3
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -81,7 +80,7 @@ const Post = sequelize.define('Post', {
   }
 });
 
-// Sync model with database
+// Syncing model with database
 sequelize.sync()
   .then(() => console.log('Database & tables created!'))
   .catch(err => console.error('Error creating database tables: ', err));
@@ -121,7 +120,7 @@ app.get('/posts', async (req, res) => {
   }
 });
 
-// Create a new post
+// Create a new post api
 app.post('/posts', upload.single('image'), async (req, res) => {
   try {
     const { title, desc, tag } = req.body;
@@ -134,7 +133,7 @@ app.post('/posts', upload.single('image'), async (req, res) => {
   }
 });
 
-// Start server
+// Starting server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
